@@ -1,0 +1,49 @@
+jpg_invoice_extraction_task: # J'ai renommé la tâche pour plus de clarté
+  description: >
+    Votre mission est d'analyser le contenu de l'image jpg situé au chemin suivant {jpg_path}, qui est une facture d'achat.
+    Vous devez extraire avec la plus grande précision les informations suivantes :
+
+    1.  **Nom du fournisseur** : Le nom de l'entreprise ou de la personne qui a émis la facture.
+    2.  **Numéro de facture** : L'identifiant unique de la facture.
+    3.  **Date de la facture** : La date à laquelle la facture a été émise.
+    4.  **Montant total Hors Taxe (HT)** : Le montant total de la facture avant l'application de toute taxe. **Attention : Il s'agit du montant total général, situé habituellement en bas de la facture, et non des montants HT des articles individuels. Il est parfois noté uniquement Total HT et à droite le montant**
+    5.  **Montant total de la TVA (Taxe sur la Valeur Ajoutée)** : Le montant total de la TVA appliquée sur la facture. **Attention : Il s'agit du montant total général de la TVA, situé habituellement en bas de la facture, et non des montants de TVA des articles individuels. Il peut être noté uniquement TVA et on a à droite le montant**
+    6.  **Montant total Toutes Taxes Comprises (TTC)** : Le montant final à payer, incluant toutes les taxes. **Attention : Il s'agit du montant total général TTC, situé habituellement en bas de la facture, et non des montants TTC des articles individuels. Il peut y avoir uniquement Total TTc avec à droite le montant**
+
+    L'agent doit parcourir le jpg pour localiser spécifiquement ces éléments.
+    Votre réponse finale DOIT être structurée et précise, basée exclusivement sur le contenu du jpg.
+    Si une information n'est pas explicitement présente ou identifiable, indiquez "Non trouvé" pour le champ concerné.
+  expected_output: >
+    Fournissez les informations extraites sous la forme suivante :
+
+    Nom du fournisseur: [Nom du fournisseur extrait]
+    Numéro de facture: [Numéro de facture extrait]
+    Date de la facture: [Date de la facture extraite, si possible au format JJ/MM/AAAA]
+    Montant total HT: [Montant total HT extrait, avec la devise si précisée, ex: 150.00 EUR]
+    Montant total TVA: [Montant total TVA extrait, avec la devise si précisée, ex: 30.00 EUR]
+    Montant total TTC: [Montant total TTC extrait, avec la devise si précisée, ex: 180.00 EUR]
+  agent: jpg_rag_agent
+
+invoice_data_to_csv_task: # Nom de tâche mis à jour pour refléter la nouvelle fonction
+  description: >
+    Vous recevez les informations structurées d'une facture (Nom du fournisseur, Numéro de facture, Date de la facture, Montant total HT, Montant total TVA, Montant total TTC)
+    provenant de la tâche d'extraction précédente. 
+
+    Votre mission est de convertir ces informations, pour UNE SEULE facture, en une chaîne de caractères au format CSV (Comma Separated Values).
+    Cette chaîne CSV doit inclure :
+    1. Une première ligne d'en-tête avec les noms des colonnes.
+    2. Une seconde ligne avec les données de la facture correspondante.
+
+    Utilisez lae point virgule (;) comme séparateur de champs.
+    L'ordre des colonnes doit impérativement être : Nom du fournisseur,Numéro de facture,Date de la facture,Montant total HT,Montant total TVA,Montant total TTC.
+
+    Lors de la conversion des montants (HT, TVA, TTC), assurez-vous d'extraire uniquement la valeur numérique et d'utiliser une virgule (,) comme séparateur décimal (par exemple, si l'information reçue est '120.60 EUR', la valeur dans le CSV doit être '120,60').
+    Pour la date, essayez de la formater en JJ/MM/AAAA si elle ne l'est pas déjà.
+
+    La sortie finale doit être une chaîne de texte pure, prête à être enregistrée dans un fichier .csv, sans aucun formatage markdown supplémentaire comme les backticks ('```').
+  expected_output: >
+    Une chaîne de caractères unique représentant le contenu CSV avec un en-tête et une ligne de données. Par exemple :
+
+    "Nom du fournisseur;Numéro de facture;Date de la facture;Montant total HT;Montant total TVA;Montant total TTC
+    Société Exemple SARL;FACT2024-05-001;07/05/2024;1500,75;300,15;1800,90"
+  agent: jpg_summary_agent # Vous utilisez le même nom d'agent, assurez-vous qu'il est configuré pour gérer ce type de tâche.

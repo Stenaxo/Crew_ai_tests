@@ -1,0 +1,23 @@
+[project]
+name = "papa"
+version = "0.1.0"
+description = "papa using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "crewai[tools]>=0.118.0,<1.0.0"
+]
+
+[project.scripts]
+papa = "papa.main:run"
+run_crew = "papa.main:run"
+train = "papa.main:train"
+replay = "papa.main:replay"
+test = "papa.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"

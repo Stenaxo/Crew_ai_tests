@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SCRIPT_DIR = Path(__file__).parent
-pdf_path = str(SCRIPT_DIR/"Projet_entreprise_papier.pdf")
+pdf_path = str(SCRIPT_DIR/"projet_entreprise_papier.pdf")
 pdf_search_tool = PDFSearchTool(pdf=pdf_path)
 
 @CrewBase
