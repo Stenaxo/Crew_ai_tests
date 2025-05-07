@@ -3,6 +3,7 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from dotenv import load_dotenv
+from .tools.pdf_search_tool import CustomPDFSearchTool
 
 load_dotenv()
 # If you want to run a snippet of code before or after the crew starts,
@@ -24,8 +25,10 @@ class Ai():
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
     def researcher(self) -> Agent:
+        pdf_tool = CustomPDFSearchTool(pdf_path="path/to/your/pdf")
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
+            config=self.agents_config['researcher'],
+            tools=[pdf_tool],
             verbose=True
         )
 
